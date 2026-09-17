@@ -3,6 +3,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:simple_calculator/main.dart';
 
 void main() {
+  testWidgets('Adding 2 + 2 equals 4', (tester) async {
+    await tester.pumpWidget(const MyApp());
+
+    final fields = find.byType(TextField);
+    await tester.enterText(fields.at(0), '2');
+    await tester.enterText(fields.at(1), '2');
+    await tester.tap(find.widgetWithText(FilledButton, '+'));
+    await tester.pump();
+
+    expect(find.text('Result: 4'), findsOneWidget);
+  });
+
   testWidgets('Calculates all four operations and handles invalid input', (
     tester,
   ) async {
