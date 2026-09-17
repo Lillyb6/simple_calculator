@@ -45,7 +45,13 @@ jobs:
         run: flutter pub get
 
       - name: ✅ Run tests
-        run: flutter test --coverage
+        run: |
+          set -o pipefail
+          flutter test --coverage --machine | tee test-results.json
+
+      - name: Test results summary
+        if: always()
+        run: python3 .github/scripts/test_summary.py
 
 
       - name: 🏗️ Build APKs
