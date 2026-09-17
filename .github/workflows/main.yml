@@ -46,13 +46,13 @@ jobs:
 
       - name: ✅ Run tests
         run: |
-          set -o pipefail
-          flutter test --coverage --machine | tee test-results.json
-
-      - name: Test results summary
-        if: always()
-        run: python3 .github/scripts/test_summary.py
-
+          test_status=0
+          flutter test --coverage --machine > test-results.json || test_status=$?
+          python3 .github/scripts/test_summary.py
+          if [ "$test_status" -ne 0 ]; then
+            cat test-results.json
+          fi
+          exit "$test_status"
 
       - name: 🏗️ Build APKs
         run: flutter build apk --release 

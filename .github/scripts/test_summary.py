@@ -35,7 +35,12 @@ for title, tests in [('Passed tests', passed), ('Failed tests', failed), ('Skipp
     if tests:
         lines += [f'### {title}', ''] + [f'- {name}' for name in tests] + ['']
 summary = '\n'.join(lines)
-print(summary)
+for title, icon, tests in [('Passing tests', '✅', passed), ('Failing tests', '❌', failed), ('Skipped tests', '⏭️', skipped)]:
+    if tests:
+        print(f'::group::{icon} {title}')
+        for name in tests:
+            print(f'{icon} {name}')
+        print('::endgroup::')
 if os.environ.get('GITHUB_STEP_SUMMARY'):
     with open(os.environ['GITHUB_STEP_SUMMARY'], 'a', encoding='utf-8') as output:
         output.write(summary + '\n')
