@@ -1,30 +1,35 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:simple_calculator/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+  testWidgets('Calculates all four operations and handles invalid input', (
+    tester,
+  ) async {
     await tester.pumpWidget(const MyApp());
+    final fields = find.byType(TextField);
+    Future<void> check(
+      String a,
+      String b,
+      String operation,
+      String expected,
+    ) async {
+      await tester.enterText(fields.at(0), a);
+      await tester.enterText(fields.at(1), b);
+      await tester.tap(find.widgetWithText(FilledButton, operation));
+      await tester.pump();
+      expect(find.text(expected), findsOneWidget);
+    }
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    await check('8', '2', '+', 'Result: 10');
+    await check('8', '2', '−', 'Result: 6');
+    await check('8', '2', '×', 'Result: 16');
+    await check('8', '2', '÷', 'Result: 4');
+    await check('-3', '2', '×', 'Result: -6');
+    await check('0.1', '0.2', '+', 'Result: 0.3');
+    await check('8', '0', '÷', 'Cannot divide by zero.');
+    await check('', '2', '+', 'Please enter two valid numbers.');
+    await check('abc', '2', '+', 'Please enter two valid numbers.');
+    await check('5', '2', '÷', 'Result: 2.5');
   });
 }
